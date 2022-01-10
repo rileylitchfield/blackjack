@@ -68,7 +68,7 @@ function updateTotal() {
     document.getElementById("score").innerHTML = score;
 }
 
-// writeHTML
+// Writes innerHTML 
 function writeHTML(elementID, inputResult) {
     document.getElementById(elementID).innerHTML = inputResult;
 }
@@ -126,8 +126,8 @@ function hit() {
     var newCard = `<div class="card">
     <div class="number-area">
     <div class="number" id="number-${idTracker}">
-    </div></div></div>`
-    cardGroup.insertAdjacentHTML('beforeend', newCard)
-    document.getElementById(`number-${idTracker}`).innerHTML = randomCard();
+    </div></div></div>`;
+    cardGroup.insertAdjacentHTML('beforeend', newCard);
+    writeHTML(`number-${idTracker}`, randomCard());
     updateTotal();
 }
