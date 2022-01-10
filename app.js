@@ -5,6 +5,10 @@ var randomVal = deck[Math.floor(Math.random() * deck.length)];
 var randomValInt = 0;
 var idTracker = 2;
 var score = 0;
+var containerElement = document.body;
+var winningText = `<h1 class="game-result">YOU WIN</h1>`;
+var losingText = `<h1 class="game-result">BUST</h1>`;
+
 
 updateTotal();
 
@@ -46,9 +50,11 @@ function updateTotal() {
             }
         }
     } else if (score == 21) {
-        var containerElement = document.body;
-        var winningText = `<h1 class="test">YOU WIN</h1>`
         containerElement.insertAdjacentHTML('beforeend', winningText)
+    }
+
+    if (score > 21) {
+        containerElement.insertAdjacentHTML('beforeend', losingText)
     }
 
     document.getElementById("score").innerHTML = score;
@@ -56,8 +62,8 @@ function updateTotal() {
 
 // Initialize the card table
 function startGame() {
-    var cardOne = changeCard();
-    var cardTwo = changeCard();
+    var cardOne = randomCard();
+    var cardTwo = randomCard();
     document.getElementById("number-1").innerHTML = cardOne;
     document.getElementById("number-2").innerHTML = cardTwo;
     playerDeck = [cardOne, cardTwo];
@@ -84,17 +90,24 @@ function changeBG() {
 
 }
 
-// 
-function changeCard() {
+// Returns random card from deck
+function randomCard() {
     randomVal = deck[Math.floor(Math.random() * deck.length)];
 
-    filterDeck(playerDeck[randomVal]);
+    // filterDeck(playerDeck[randomVal]);
 
-    playerDeck.push(parseInt(randomValInt));
+    playerDeck.push(randomVal);
+    score = 0;
+
+    for (let i = 0; i < playerDeck.length; i++) {
+        filterDeck(playerDeck[i]);
+        score += parseInt(randomValInt);
+    }
 
     return randomVal;
 }
 
+// Adds new card to table and updates the new total
 function hit() {
     idTracker += 1;
     var cardGroup = document.querySelector(".card-group");
@@ -103,6 +116,6 @@ function hit() {
     <div class="number" id="number-${idTracker}">
     </div></div></div>`
     cardGroup.insertAdjacentHTML('beforeend', newCard)
-    document.getElementById(`number-${idTracker}`).innerHTML = changeCard();
+    document.getElementById(`number-${idTracker}`).innerHTML = randomCard();
     updateTotal();
 }

@@ -62,10 +62,17 @@ body {
     margin-left: 5px;
 }
 
-.test {
+.game-result {
     font-size: 10rem;
     margin: 0;
     position: absolute;
     padding: 0;
     bottom: 0;
+    left:0;
+    right:0;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 50%;
+    color: #fff;
 }
