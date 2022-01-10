@@ -9,7 +9,7 @@ var containerElement = document.body;
 var winningText = `<h1 class="game-result">YOU WIN</h1>`;
 var losingText = `<h1 class="game-result">BUST</h1>`;
 
-
+// Initialize total
 updateTotal();
 
 // Search for face cards and return their value
@@ -33,6 +33,26 @@ function filterDeck(x) {
     }
 }
 
+// If players busts, check for aces to reduce the value from 11 to 1
+// If score = 21, player wins
+// If score is still greater than 21 (after initial check) then player loses
+function checkScore() {
+    if (score > 21) {
+        for (let i = 0; i < playerDeck.length; i++) {
+            if (playerDeck[i] == "A") {
+                playerDeck[i] = "1";
+                updateTotal();
+            }
+        }
+    }
+    if (score == 21) {
+        containerElement.insertAdjacentHTML('beforeend', winningText)
+    }
+    if (score > 21) {
+        containerElement.insertAdjacentHTML('beforeend', losingText)
+    }
+}
+
 // Reset and re-add score from playerDeck, check for face cards, check for 21 or bust
 function updateTotal() {
     score = 0;
@@ -42,20 +62,7 @@ function updateTotal() {
         score += parseInt(randomValInt);
     }
 
-    if (score > 21) {
-        for (let i = 0; i < playerDeck.length; i++) {
-            if (playerDeck[i] == "A") {
-                playerDeck[i] = "1";
-                updateTotal();
-            }
-        }
-    } else if (score == 21) {
-        containerElement.insertAdjacentHTML('beforeend', winningText)
-    }
-
-    if (score > 21) {
-        containerElement.insertAdjacentHTML('beforeend', losingText)
-    }
+    checkScore();
 
     document.getElementById("score").innerHTML = score;
 }
@@ -94,9 +101,8 @@ function changeBG() {
 function randomCard() {
     randomVal = deck[Math.floor(Math.random() * deck.length)];
 
-    // filterDeck(playerDeck[randomVal]);
-
     playerDeck.push(randomVal);
+
     score = 0;
 
     for (let i = 0; i < playerDeck.length; i++) {
