@@ -14,26 +14,29 @@ var losingText = `<h1 class="game-result">BUST</h1>`;
 updateTotal();
 
 // Search for face cards and return their value
-function filterDeck(x) {
-    switch (x) {
-        case "J":
-            randomValInt = 10;
-            break;
-        case "Q":
-            randomValInt = 10;
-            break;
-        case "K":
-            randomValInt = 10;
-            break;
-        case "A":
-            randomValInt = 11;
-            break;
-        default:
-            randomValInt = x;
-            break;
+function filterDeck() {
+    console.log(playerDeck);
+    for (let i = 0; i < playerDeck.length; i++) {
+        switch (playerDeck[i]) {
+            case "J":
+                randomValInt = 10;
+                break;
+            case "Q":
+                randomValInt = 10;
+                break;
+            case "K":
+                randomValInt = 10;
+                break;
+            case "A":
+                randomValInt = 11;
+                break;
+            default:
+                randomValInt = playerDeck[i];
+                break;
+        }
+        score += parseInt(randomValInt);
     }
 }
-
 // If players busts, check for aces to reduce the value from 11 to 1
 // If score = 21, player wins
 // If score is still greater than 21 (after initial check) then player loses
@@ -58,10 +61,7 @@ function checkScore() {
 function updateTotal() {
     score = 0;
 
-    for (let i = 0; i < playerDeck.length; i++) {
-        filterDeck(playerDeck[i]);
-        score += parseInt(randomValInt);
-    }
+    filterDeck();
 
     checkScore();
 
@@ -103,7 +103,7 @@ function changeBG() {
 
 }
 
-// Returns random card from deck
+// Returns random card from deck, adds it to playerDeck
 function randomCard() {
     randomVal = deck[Math.floor(Math.random() * deck.length)];
 
@@ -111,10 +111,7 @@ function randomCard() {
 
     score = 0;
 
-    for (let i = 0; i < playerDeck.length; i++) {
-        filterDeck(playerDeck[i]);
-        score += parseInt(randomValInt);
-    }
+    filterDeck();
 
     return randomVal;
 }
