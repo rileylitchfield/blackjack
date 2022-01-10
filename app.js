@@ -1,3 +1,4 @@
+// Initialize variables
 var deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 var deckObj = { "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10, "A": 11 };
 var playerDeck = [];
@@ -9,12 +10,12 @@ var containerElement = document.body;
 var winningText = `<h1 class="game-result">YOU WIN</h1>`;
 var losingText = `<h1 class="game-result">BUST</h1>`;
 
-// Initialize total
+// Initialize score
 updateTotal();
 
 // Search for face cards and return their value
 function filterDeck(x) {
-    switch (String(x)) {
+    switch (x) {
         case "J":
             randomValInt = 10;
             break;
@@ -67,12 +68,17 @@ function updateTotal() {
     document.getElementById("score").innerHTML = score;
 }
 
+// writeHTML
+function writeHTML(elementID, inputResult) {
+    document.getElementById(elementID).innerHTML = inputResult;
+}
+
 // Initialize the card table
 function startGame() {
     var cardOne = randomCard();
     var cardTwo = randomCard();
-    document.getElementById("number-1").innerHTML = cardOne;
-    document.getElementById("number-2").innerHTML = cardTwo;
+    writeHTML("number-1", cardOne);
+    writeHTML("number-2", cardTwo);
     playerDeck = [cardOne, cardTwo];
     updateTotal();
 }
