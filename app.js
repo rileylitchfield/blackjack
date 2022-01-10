@@ -1,5 +1,6 @@
 var deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-var deckObj = { "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10, "A": 1 };
+var deckObj = { "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10, "A": 11 };
+var playerDeck = [];
 var randomVal = deck[Math.floor(Math.random() * deck.length)];
 var randomValInt = 0;
 var idTracker = 2;
@@ -7,26 +8,63 @@ var score = 0;
 
 updateTotal();
 
-function updateTotal() {
-    document.getElementById("score").innerHTML = score;
-
-    if (score > 21) {
-        var containerElement = document.querySelector(".container");
-        var newCard = `<h1 class="test">BUST</h1>`
-        containerElement.insertAdjacentHTML('beforeend', newCard)
-    } else if (score == 21) {
-        var containerElement = document.body;
-        var newCard = `<h1 class="test">YOU WIN</h1>`
-        containerElement.insertAdjacentHTML('beforeend', newCard)
+// Search for face cards and return their value
+function filterDeck(x) {
+    switch (String(x)) {
+        case "J":
+            randomValInt = 10;
+            break;
+        case "Q":
+            randomValInt = 10;
+            break;
+        case "K":
+            randomValInt = 10;
+            break;
+        case "A":
+            randomValInt = 11;
+            break;
+        default:
+            randomValInt = x;
+            break;
     }
 }
 
+// Reset and re-add score from playerDeck, check for face cards, check for 21 or bust
+function updateTotal() {
+    score = 0;
+
+    for (let i = 0; i < playerDeck.length; i++) {
+        filterDeck(playerDeck[i]);
+        score += parseInt(randomValInt);
+    }
+
+    if (score > 21) {
+        for (let i = 0; i < playerDeck.length; i++) {
+            if (playerDeck[i] == "A") {
+                playerDeck[i] = "1";
+                updateTotal();
+            }
+        }
+    } else if (score == 21) {
+        var containerElement = document.body;
+        var winningText = `<h1 class="test">YOU WIN</h1>`
+        containerElement.insertAdjacentHTML('beforeend', winningText)
+    }
+
+    document.getElementById("score").innerHTML = score;
+}
+
+// Initialize the card table
 function startGame() {
-    document.getElementById("number-1").innerHTML = changeCard();
-    document.getElementById("number-2").innerHTML = changeCard();
+    var cardOne = changeCard();
+    var cardTwo = changeCard();
+    document.getElementById("number-1").innerHTML = cardOne;
+    document.getElementById("number-2").innerHTML = cardTwo;
+    playerDeck = [cardOne, cardTwo];
     updateTotal();
 }
 
+// Change card table background color
 function changeBG() {
     var hexColorArr = [];
 
@@ -46,28 +84,14 @@ function changeBG() {
 
 }
 
+// 
 function changeCard() {
     randomVal = deck[Math.floor(Math.random() * deck.length)];
 
-    switch (randomVal) {
-        case 'J':
-            randomValInt = 10;
-            break;
-        case "Q":
-            randomValInt = 10;
-            break;
-        case "K":
-            randomValInt = 10;
-            break;
-        case "A":
-            randomValInt = 1;
-            break;
-        default:
-            randomValInt = randomVal;
-            break;
-    }
+    filterDeck(playerDeck[randomVal]);
 
-    score += parseInt(randomValInt);
+    playerDeck.push(parseInt(randomValInt));
+
     return randomVal;
 }
 
