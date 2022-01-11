@@ -9,6 +9,7 @@ var score = 0;
 var containerElement = document.body;
 var winningText = `<h1 class="game-result">YOU WIN</h1>`;
 var losingText = `<h1 class="game-result">BUST</h1>`;
+var cardGroup = document.querySelector(".card-group");
 
 // Initialize score
 updateTotal();
@@ -38,9 +39,7 @@ function filterDeck() {
     }
 }
 // If players busts, check for aces to reduce the value from 11 to 1
-// If score = 21, player wins
-// If score is still greater than 21 (after initial check) then player loses
-function checkScore() {
+function checkAces() {
     if (score > 21) {
         for (let i = 0; i < playerDeck.length; i++) {
             if (playerDeck[i] == "A") {
@@ -49,6 +48,12 @@ function checkScore() {
             }
         }
     }
+}
+
+// If score = 21, player wins
+// If score is still greater than 21 (after initial check) then player loses
+function checkScore() {
+    checkAces();
     if (score == 21) {
         containerElement.insertAdjacentHTML('beforeend', winningText)
     }
@@ -119,7 +124,6 @@ function randomCard() {
 // Adds new card to table and updates the new total
 function hit() {
     idTracker += 1;
-    var cardGroup = document.querySelector(".card-group");
     var newCard = `<div class="card">
     <div class="number-area">
     <div class="number" id="number-${idTracker}">
