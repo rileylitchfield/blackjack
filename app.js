@@ -39,12 +39,15 @@ function filterDeck() {
     }
 }
 // If players busts, check for aces to reduce the value from 11 to 1
+// If there is more than one ace, it prioritizes 11 over 1 unless it is a bust
 function checkAces() {
     if (score > 21) {
         for (let i = 0; i < playerDeck.length; i++) {
-            if (playerDeck[i] == "A") {
+            if (playerDeck[i] == "A" && score > 21) {
                 playerDeck[i] = "1";
                 updateTotal();
+            } else {
+
             }
         }
     }
@@ -65,11 +68,8 @@ function checkScore() {
 // Reset and re-add score from playerDeck, check for face cards, check for 21 or bust
 function updateTotal() {
     score = 0;
-
     filterDeck();
-
     checkScore();
-
     document.getElementById("score").innerHTML = score;
 }
 
@@ -80,8 +80,10 @@ function writeHTML(elementID, inputResult) {
 
 // Initialize the card table
 function startGame() {
-    var cardOne = randomCard();
-    var cardTwo = randomCard();
+    // var cardOne = randomCard();
+    // var cardTwo = randomCard();
+    var cardOne = "A";
+    var cardTwo = "A";
     writeHTML("number-1", cardOne);
     writeHTML("number-2", cardTwo);
     playerDeck = [cardOne, cardTwo];
@@ -103,7 +105,6 @@ function changeBG() {
 
     hexColorArr.unshift("#");
     var hexColor = hexColorArr.join('');
-
     document.body.style.backgroundColor = hexColor;
 
 }
@@ -111,13 +112,9 @@ function changeBG() {
 // Returns random card from deck, adds it to playerDeck
 function randomCard() {
     randomVal = deck[Math.floor(Math.random() * deck.length)];
-
     playerDeck.push(randomVal);
-
     score = 0;
-
     filterDeck();
-
     return randomVal;
 }
 
