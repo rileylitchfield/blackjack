@@ -10,9 +10,11 @@ var containerElement = document.body;
 var winningText = `<h1 class="game-result">YOU WIN</h1>`;
 var losingText = `<h1 class="game-result">BUST</h1>`;
 var cardGroup = document.querySelector(".card-group");
+var cardOne = randomCard();
+var cardTwo = randomCard();
 
 // Initialize score
-updateTotal();
+writeHTML("score", 0);
 
 // Search for face cards and return their value
 function filterDeck() {
@@ -38,6 +40,7 @@ function filterDeck() {
         score += parseInt(randomValInt);
     }
 }
+
 // If players busts, check for aces to reduce the value from 11 to 1
 // If there is more than one ace, it prioritizes 11 over 1 unless it is a bust
 function checkAces() {
@@ -70,7 +73,7 @@ function updateTotal() {
     score = 0;
     filterDeck();
     checkScore();
-    document.getElementById("score").innerHTML = score;
+    writeHTML("score", score);
 }
 
 // Writes innerHTML 
@@ -80,10 +83,6 @@ function writeHTML(elementID, inputResult) {
 
 // Initialize the card table
 function startGame() {
-    // var cardOne = randomCard();
-    // var cardTwo = randomCard();
-    var cardOne = "A";
-    var cardTwo = "A";
     writeHTML("number-1", cardOne);
     writeHTML("number-2", cardTwo);
     playerDeck = [cardOne, cardTwo];
