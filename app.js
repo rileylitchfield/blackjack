@@ -2,6 +2,7 @@
 var deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 var deckObj = { "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10, "A": 11 };
 var playerDeck = [];
+var dealerDeck = [];
 var randomVal = deck[Math.floor(Math.random() * deck.length)];
 var randomValInt = 0;
 var idTracker = 2;
@@ -9,9 +10,12 @@ var score = 0;
 var containerElement = document.body;
 var winningText = `<h1 class="game-result">YOU WIN</h1>`;
 var losingText = `<h1 class="game-result">BUST</h1>`;
-var cardGroup = document.querySelector(".card-group");
-var cardOne = randomCard();
-var cardTwo = randomCard();
+var playerCardGroup = document.querySelector(".player-card-group");
+var dealerCardGroup = document.querySelector(".dealer-card-group");
+var playerCardOne = randomCard(playerDeck);
+var playerCardTwo = randomCard(playerDeck);
+var dealerCardOne = randomCard(dealerDeck);
+var dealerCardTwo = randomCard(dealerDeck);
 
 // Initialize score
 writeHTML("score", 0);
@@ -83,9 +87,13 @@ function writeHTML(elementID, inputResult) {
 
 // Initialize the card table
 function startGame() {
-    writeHTML("number-1", cardOne);
-    writeHTML("number-2", cardTwo);
-    playerDeck = [cardOne, cardTwo];
+    writeHTML("player-1", playerCardOne);
+    writeHTML("player-2", playerCardTwo);
+    playerDeck = [playerCardOne, playerCardTwo];
+
+    writeHTML("dealer-1", dealerCardOne);
+    writeHTML("dealer-2", dealerCardTwo);
+    dealerDeck = [dealerCardOne, dealerCardTwo];
     updateTotal();
 }
 
@@ -109,9 +117,9 @@ function changeBG() {
 }
 
 // Returns random card from deck, adds it to playerDeck
-function randomCard() {
+function randomCard(x) {
     randomVal = deck[Math.floor(Math.random() * deck.length)];
-    playerDeck.push(randomVal);
+    x.push(randomVal);
     score = 0;
     filterDeck();
     return randomVal;
@@ -121,10 +129,11 @@ function randomCard() {
 function hit() {
     idTracker += 1;
     var newCard = `<div class="card">
-    <div class="number-area">
-    <div class="number" id="number-${idTracker}">
-    </div></div></div>`;
-    cardGroup.insertAdjacentHTML('beforeend', newCard);
-    writeHTML(`number-${idTracker}`, randomCard());
+                <div class="player-card-number-area number-area">
+                    <div class="player-card-number number" id="player-${idTracker}"></div>
+                </div>
+            </div>`;
+    playerCardGroup.insertAdjacentHTML('beforeend', newCard);
+    writeHTML(`player-${idTracker}`, randomCard(playerDeck));
     updateTotal();
 }
