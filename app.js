@@ -1,17 +1,17 @@
 // Initialize variables
-var deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-var deckObj = { "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10, "A": 11 };
+const deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+const deckObj = { "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10, "A": 11 };
 var playerDeck = [];
 var dealerDeck = [];
 var randomVal = deck[Math.floor(Math.random() * deck.length)];
 var randomValInt = 0;
 var idTracker = 2;
 var score = 0;
-var containerElement = document.body;
-var winningText = `<h1 class="game-result">YOU WIN</h1>`;
-var losingText = `<h1 class="game-result">BUST</h1>`;
-var playerCardGroup = document.querySelector(".player-card-group");
-var dealerCardGroup = document.querySelector(".dealer-card-group");
+const containerElement = document.body;
+const winningText = `<h1 class="game-result">YOU WIN</h1>`;
+const losingText = `<h1 class="game-result">BUST</h1>`;
+const playerCardGroup = document.querySelector(".player-card-group");
+const dealerCardGroup = document.querySelector(".dealer-card-group");
 var playerCardOne = randomCard(playerDeck);
 var playerCardTwo = randomCard(playerDeck);
 var dealerCardOne = randomCard(dealerDeck);
@@ -92,7 +92,7 @@ function startGame() {
     playerDeck = [playerCardOne, playerCardTwo];
 
     writeHTML("dealer-1", dealerCardOne);
-    writeHTML("dealer-2", dealerCardTwo);
+    // writeHTML("dealer-2", dealerCardTwo);
     dealerDeck = [dealerCardOne, dealerCardTwo];
     updateTotal();
 }
@@ -112,7 +112,7 @@ function changeBG() {
 
     hexColorArr.unshift("#");
     var hexColor = hexColorArr.join('');
-    document.body.style.backgroundColor = hexColor;
+    containerElement.style.backgroundColor = hexColor;
 
 }
 
