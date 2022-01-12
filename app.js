@@ -7,6 +7,7 @@ var randomVal = deck[Math.floor(Math.random() * deck.length)];
 var randomValInt = 0;
 var idTracker = 2;
 var score = 0;
+var dealerScore = 0;
 const containerElement = document.body;
 const winningText = `<h1 class="game-result">YOU WIN</h1>`;
 const losingText = `<h1 class="game-result">BUST</h1>`;
@@ -15,14 +16,73 @@ const dealerCardGroup = document.querySelector(".dealer-card-group");
 var playerCardOne = randomCard(playerDeck);
 var playerCardTwo = randomCard(playerDeck);
 var dealerCardOne = randomCard(dealerDeck);
-var dealerCardTwo = randomCard(dealerDeck);
+var newCard = ``;
 
 // Initialize score
 writeHTML("score", 0);
 
+function stand() {
+    while (dealerScore < 17) {
+        idTracker += 1;
+        newCard = `<div class="card">
+                <div class="dealer-card-number-area number-area">
+                    <div class="dealer-card-number number" id="dealer-${idTracker}"></div>
+                </div>
+            </div>`;
+        dealerCardGroup.insertAdjacentHTML('beforeend', newCard);
+        writeHTML(`dealer-${idTracker}`, randomCard(dealerDeck));
+        for (let i = 0; i < dealerDeck.length; i++) {
+            switch (dealerDeck[i]) {
+                case "J":
+                    randomValInt = 10;
+                    break;
+                case "Q":
+                    randomValInt = 10;
+                    break;
+                case "K":
+                    randomValInt = 10;
+                    break;
+                case "A":
+                    randomValInt = 11;
+                    break;
+                default:
+                    randomValInt = dealerDeck[i];
+                    break;
+            }
+            dealerScore += parseInt(randomValInt);
+        }
+        if (dealerScore > 21) {
+            for (let i = 0; i < dealerDeck.length; i++) {
+                if (dealerDeck[i] == "A" && dealerScore > 21) {
+                    dealerDeck[i] = "1";
+                    for (let i = 0; i < dealerDeck.length; i++) {
+                        switch (dealerDeck[i]) {
+                            case "J":
+                                randomValInt = 10;
+                                break;
+                            case "Q":
+                                randomValInt = 10;
+                                break;
+                            case "K":
+                                randomValInt = 10;
+                                break;
+                            case "A":
+                                randomValInt = 11;
+                                break;
+                            default:
+                                randomValInt = dealerDeck[i];
+                                break;
+                        }
+                        dealerScore += parseInt(randomValInt);
+                    }
+                }
+            }
+        }
+    }
+}
+
 // Search for face cards and return their value
 function filterDeck() {
-    console.log(playerDeck);
     for (let i = 0; i < playerDeck.length; i++) {
         switch (playerDeck[i]) {
             case "J":
@@ -65,10 +125,10 @@ function checkAces() {
 function checkScore() {
     checkAces();
     if (score == 21) {
-        containerElement.insertAdjacentHTML('beforeend', winningText)
+        containerElement.insertAdjacentHTML('beforeend', winningText);
     }
     if (score > 21) {
-        containerElement.insertAdjacentHTML('beforeend', losingText)
+        containerElement.insertAdjacentHTML('beforeend', losingText);
     }
 }
 
@@ -90,10 +150,8 @@ function startGame() {
     writeHTML("player-1", playerCardOne);
     writeHTML("player-2", playerCardTwo);
     playerDeck = [playerCardOne, playerCardTwo];
-
     writeHTML("dealer-1", dealerCardOne);
-    // writeHTML("dealer-2", dealerCardTwo);
-    dealerDeck = [dealerCardOne, dealerCardTwo];
+    dealerDeck = [dealerCardOne];
     updateTotal();
 }
 
@@ -128,7 +186,7 @@ function randomCard(x) {
 // Adds new card to table and updates the new total
 function hit() {
     idTracker += 1;
-    var newCard = `<div class="card">
+    newCard = `<div class="card">
                 <div class="player-card-number-area number-area">
                     <div class="player-card-number number" id="player-${idTracker}"></div>
                 </div>
