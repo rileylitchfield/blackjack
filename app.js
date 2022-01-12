@@ -11,80 +11,32 @@ var dealerScore = 0;
 const containerElement = document.body;
 const winningText = `<h1 class="game-result">YOU WIN</h1>`;
 const losingText = `<h1 class="game-result">BUST</h1>`;
-const playerCardGroup = document.querySelector(".player-card-group");
-const dealerCardGroup = document.querySelector(".dealer-card-group");
-var playerCardOne = randomCard(playerDeck);
-var playerCardTwo = randomCard(playerDeck);
-var dealerCardOne = randomCard(dealerDeck);
+var details = {
+    dealer: { idTracker: 1, userType: "dealer", cardGroup: "", deck: [], score: 0 },
+    player: { idTracker: 2, userType: "player", cardGroup: "", deck: [], score: 0 }
+};
+var playerCardOne = randomCard(details.player);
+var playerCardTwo = randomCard(details.player);
+var dealerCardOne = randomCard(details.dealer);
 var newCard = ``;
+var dealerObj = {};
+var playerObj = {};
+var userType;
 
 // Initialize score
 writeHTML("score", 0);
 
-function stand() {
-    while (dealerScore < 17) {
-        idTracker += 1;
-        newCard = `<div class="card">
-                <div class="dealer-card-number-area number-area">
-                    <div class="dealer-card-number number" id="dealer-${idTracker}"></div>
-                </div>
-            </div>`;
-        dealerCardGroup.insertAdjacentHTML('beforeend', newCard);
-        writeHTML(`dealer-${idTracker}`, randomCard(dealerDeck));
-        for (let i = 0; i < dealerDeck.length; i++) {
-            switch (dealerDeck[i]) {
-                case "J":
-                    randomValInt = 10;
-                    break;
-                case "Q":
-                    randomValInt = 10;
-                    break;
-                case "K":
-                    randomValInt = 10;
-                    break;
-                case "A":
-                    randomValInt = 11;
-                    break;
-                default:
-                    randomValInt = dealerDeck[i];
-                    break;
-            }
-            dealerScore += parseInt(randomValInt);
-        }
-        if (dealerScore > 21) {
-            for (let i = 0; i < dealerDeck.length; i++) {
-                if (dealerDeck[i] == "A" && dealerScore > 21) {
-                    dealerDeck[i] = "1";
-                    for (let i = 0; i < dealerDeck.length; i++) {
-                        switch (dealerDeck[i]) {
-                            case "J":
-                                randomValInt = 10;
-                                break;
-                            case "Q":
-                                randomValInt = 10;
-                                break;
-                            case "K":
-                                randomValInt = 10;
-                                break;
-                            case "A":
-                                randomValInt = 11;
-                                break;
-                            default:
-                                randomValInt = dealerDeck[i];
-                                break;
-                        }
-                        dealerScore += parseInt(randomValInt);
-                    }
-                }
-            }
-        }
+function stand(user) {
+    while (user.score < 17) {
+        hit(user);
+        updateTotal(user);
     }
 }
 
 // Search for face cards and return their value
-function filterDeck() {
-    for (let i = 0; i < playerDeck.length; i++) {
-        switch (playerDeck[i]) {
+function filterDeck(user) {
+    for (let i = 0; i < user.deck.length; i++) {
+        switch (user.deck[i]) {
             case "J":
                 randomValInt = 10;
                 break;
@@ -98,21 +50,21 @@ function filterDeck() {
                 randomValInt = 11;
                 break;
             default:
-                randomValInt = playerDeck[i];
+                randomValInt = user.deck[i];
                 break;
         }
-        score += parseInt(randomValInt);
+        user.score += parseInt(randomValInt);
     }
 }
 
 // If players busts, check for aces to reduce the value from 11 to 1
 // If there is more than one ace, it prioritizes 11 over 1 unless it is a bust
-function checkAces() {
-    if (score > 21) {
-        for (let i = 0; i < playerDeck.length; i++) {
-            if (playerDeck[i] == "A" && score > 21) {
-                playerDeck[i] = "1";
-                updateTotal();
+function checkAces(user) {
+    if (user.score > 21) {
+        for (let i = 0; i < user.deck.length; i++) {
+            if (user.deck[i] == "A" && user.score > 21) {
+                user.deck[i] = "1";
+                updateTotal(user);
             } else {
 
             }
@@ -122,22 +74,22 @@ function checkAces() {
 
 // If score = 21, player wins
 // If score is still greater than 21 (after initial check) then player loses
-function checkScore() {
-    checkAces();
-    if (score == 21) {
+function checkScore(user) {
+    checkAces(user);
+    if (user.score == 21) {
         containerElement.insertAdjacentHTML('beforeend', winningText);
     }
-    if (score > 21) {
+    if (user.score > 21) {
         containerElement.insertAdjacentHTML('beforeend', losingText);
     }
 }
 
 // Reset and re-add score from playerDeck, check for face cards, check for 21 or bust
-function updateTotal() {
-    score = 0;
-    filterDeck();
-    checkScore();
-    writeHTML("score", score);
+function updateTotal(user) {
+    user.score = 0;
+    filterDeck(user);
+    checkScore(user);
+    writeHTML("score", details.player.score);
 }
 
 // Writes innerHTML 
@@ -149,16 +101,37 @@ function writeHTML(elementID, inputResult) {
 function startGame() {
     writeHTML("player-1", playerCardOne);
     writeHTML("player-2", playerCardTwo);
-    playerDeck = [playerCardOne, playerCardTwo];
+    details.player.deck = [playerCardOne, playerCardTwo];
     writeHTML("dealer-1", dealerCardOne);
-    dealerDeck = [dealerCardOne];
-    updateTotal();
+    details.dealer.deck = [dealerCardOne];
+    updateTotal(details.player);
+}
+
+// Returns random card from deck, adds it to playerDeck
+function randomCard(user) {
+    randomVal = deck[Math.floor(Math.random() * deck.length)];
+    user.deck.push(randomVal);
+    user.score = 0;
+    filterDeck(details.player);
+    return randomVal;
+}
+
+// i.e. user = details.player.variable
+function hit(user) {
+    user.idTracker += 1;
+    newCard = `<div class="card">
+                <div class="${user.userType}-card-number-area number-area">
+                    <div class="${user.userType}-card-number number" id="${user.userType}-${user.idTracker}"></div>
+                </div>
+            </div>`;
+    document.querySelector(`.${user.userType}-card-group`).insertAdjacentHTML('beforeend', newCard);
+    writeHTML(`${user.userType}-${user.idTracker}`, randomCard(user));
+    updateTotal(user);
 }
 
 // Change card table background color
 function changeBG() {
     var hexColorArr = [];
-
     for (let i = 0; i < 3; i++) {
         newNum = Math.round(Math.random() * 10);
         if (newNum < 10) {
@@ -167,31 +140,7 @@ function changeBG() {
             i--;
         }
     }
-
     hexColorArr.unshift("#");
     var hexColor = hexColorArr.join('');
     containerElement.style.backgroundColor = hexColor;
-
-}
-
-// Returns random card from deck, adds it to playerDeck
-function randomCard(x) {
-    randomVal = deck[Math.floor(Math.random() * deck.length)];
-    x.push(randomVal);
-    score = 0;
-    filterDeck();
-    return randomVal;
-}
-
-// Adds new card to table and updates the new total
-function hit() {
-    idTracker += 1;
-    newCard = `<div class="card">
-                <div class="player-card-number-area number-area">
-                    <div class="player-card-number number" id="player-${idTracker}"></div>
-                </div>
-            </div>`;
-    playerCardGroup.insertAdjacentHTML('beforeend', newCard);
-    writeHTML(`player-${idTracker}`, randomCard(playerDeck));
-    updateTotal();
 }
