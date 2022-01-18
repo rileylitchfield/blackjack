@@ -29,7 +29,11 @@ writeHTML("score", 0);
 function stand(user) {
     while (user.score < 17) {
         hit(user);
-        updateTotal(user);
+        if (details.dealer.score > details.player.score && details.dealer.score <= 21) {
+            containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">You lose</h1>`);
+        } else if (details.dealer.score > 21) {
+            containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">You win</h1>`);
+        }
     }
 }
 
@@ -76,10 +80,9 @@ function checkAces(user) {
 // If score is still greater than 21 (after initial check) then player loses
 function checkScore(user) {
     checkAces(user);
-    if (user.score == 21) {
+    if (details.player.score == 21) {
         containerElement.insertAdjacentHTML('beforeend', winningText);
-    }
-    if (user.score > 21) {
+    } else if (details.player.score > 21) {
         containerElement.insertAdjacentHTML('beforeend', losingText);
     }
 }
@@ -89,7 +92,9 @@ function updateTotal(user) {
     user.score = 0;
     filterDeck(user);
     checkScore(user);
-    writeHTML("score", details.player.score);
+    if (user == details.player) {
+        writeHTML("score", details.player.score);
+    }
 }
 
 // Writes innerHTML 
@@ -112,7 +117,7 @@ function randomCard(user) {
     randomVal = deck[Math.floor(Math.random() * deck.length)];
     user.deck.push(randomVal);
     user.score = 0;
-    filterDeck(details.player);
+    filterDeck(user);
     return randomVal;
 }
 
