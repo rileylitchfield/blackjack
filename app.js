@@ -26,15 +26,12 @@ var userType;
 // Initialize score
 writeHTML("score", 0);
 
+// dealer's turn
 function stand(user) {
     while (user.score < 17) {
         hit(user);
-        if (details.dealer.score > details.player.score && details.dealer.score <= 21) {
-            containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">You lose</h1>`);
-        } else if (details.dealer.score > 21) {
-            containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">You win</h1>`);
-        }
     }
+    checkScore();
 }
 
 // Search for face cards and return their value
@@ -69,8 +66,6 @@ function checkAces(user) {
             if (user.deck[i] == "A" && user.score > 21) {
                 user.deck[i] = "1";
                 updateTotal(user);
-            } else {
-
             }
         }
     }
@@ -78,12 +73,19 @@ function checkAces(user) {
 
 // If score = 21, player wins
 // If score is still greater than 21 (after initial check) then player loses
-function checkScore(user) {
-    checkAces(user);
-    if (details.player.score == 21) {
+function checkScore() {
+    if (details.player.score == 21 && details.dealer.score == 21) {
+        containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">Push</h1>`);
+    } else if (details.player.score == 21) {
         containerElement.insertAdjacentHTML('beforeend', winningText);
     } else if (details.player.score > 21) {
         containerElement.insertAdjacentHTML('beforeend', losingText);
+    } else if (details.dealer.score > details.player.score && details.dealer.score <= 21) {
+        containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">You lose</h1>`);
+    } else if (details.player.score > details.dealer.score && details.player.score <= 21) {
+        containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">You win</h1>`);
+    } else if (details.dealer.score > 21) {
+        containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">You win</h1>`);
     }
 }
 
@@ -91,7 +93,10 @@ function checkScore(user) {
 function updateTotal(user) {
     user.score = 0;
     filterDeck(user);
-    checkScore(user);
+    checkAces(user);
+    if (details.player.score > 21) {
+        containerElement.insertAdjacentHTML('beforeend', losingText);
+    }
     if (user == details.player) {
         writeHTML("score", details.player.score);
     }
