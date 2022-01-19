@@ -27,10 +27,11 @@ writeHTML("score", 0);
 
 // Dealer's turn, recursive function
 function stand(user) {
-    hit(user)
+    hit(user);
     setTimeout(function () {
         if (user.score < 17) {
             stand(user);
+        } else {
             checkScore();
         }
     }, 1000);
@@ -77,7 +78,7 @@ function checkAces(user) {
 // If score = 21, player wins
 // If score is still greater than 21 (after initial check) then player loses
 function checkScore() {
-    if (details.player.score == 21 && details.dealer.score == 21) {
+    if (details.player.score <= 21 && details.dealer.score == details.player.score) {
         containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">Push</h1>`);
     } else if (details.player.score == 21) {
         containerElement.insertAdjacentHTML('beforeend', winningText);
@@ -89,6 +90,8 @@ function checkScore() {
         containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">You win</h1>`);
     } else if (details.dealer.score > 21) {
         containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">You win</h1>`);
+    } else {
+        console.log("Missing case");
     }
 }
 
