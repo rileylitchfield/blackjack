@@ -1,6 +1,5 @@
 // Initialize variables
 const deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-const deckObj = { "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10, "A": 11 };
 var playerDeck = [];
 var dealerDeck = [];
 var randomVal = deck[Math.floor(Math.random() * deck.length)];
@@ -26,12 +25,16 @@ var userType;
 // Initialize score
 writeHTML("score", 0);
 
-// dealer's turn
+// Dealer's turn, recursive function
 function stand(user) {
-    while (user.score < 17) {
-        hit(user);
-    }
-    checkScore();
+    hit(user)
+    setTimeout(function () {
+        if (user.score < 17) {
+            stand(user);
+            checkScore();
+        }
+    }, 1000);
+
 }
 
 // Search for face cards and return their value

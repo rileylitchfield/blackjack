@@ -24,7 +24,7 @@ body {
 
 .card-group {
     display: flex;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .card {
@@ -32,7 +32,7 @@ body {
     height: 200px;
     background: rgb(199, 9, 9);
     margin: 10px;
-    border-radius: 2px;
+    border-radius: 10px;
     position: relative;
 }
 
