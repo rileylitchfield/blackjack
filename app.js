@@ -7,7 +7,7 @@ var randomValInt = 0;
 var idTracker = 2;
 var score = 0;
 var dealerScore = 0;
-const containerElement = document.body;
+const containerElement = document.querySelector(".player-card-group");
 const winningText = `<h1 class="game-result">YOU WIN</h1>`;
 const losingText = `<h1 class="game-result">BUST</h1>`;
 var details = {
@@ -23,7 +23,7 @@ var playerObj = {};
 var userType;
 
 // Initialize score
-writeHTML("score", 0);
+writeHTML("player-score", 0);
 
 // Dealer's turn, recursive function
 function stand(user) {
@@ -104,7 +104,7 @@ function updateTotal(user) {
         containerElement.insertAdjacentHTML('beforeend', losingText);
     }
     if (user == details.player) {
-        writeHTML("score", details.player.score);
+        writeHTML(`${user.userType}-score`, details.player.score);
     }
 }
 

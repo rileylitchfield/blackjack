@@ -13,6 +13,11 @@
 </head>
 
 <body>
+    <div class="controls-group">
+        <div class="score">
+            <h1 id="dealer-score"></h1>
+        </div>
+    </div>
     <div class="container">
         <div class="card-group dealer-card-group">
             <div class="card">
@@ -33,14 +38,15 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="controls-group">
         <div class="buttons">
-            <button type="button" class="btn" onclick="startGame()">Start Game</button>
+            <button type="button" class="btn" onclick="startGame()">Deal</button>
             <button type="button" class="btn" onclick="stand(details.dealer)">Stand</button>
             <button type="button" class="btn" onclick="hit(details.player)">Hit</button>
         </div>
         <div class="score">
-            <h1>Total: </h1>
-            <h1 id="score"></h1>
+            <h1 id="player-score"></h1>
         </div>
     </div>
 
