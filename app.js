@@ -7,20 +7,17 @@ var randomValInt = 0;
 var idTracker = 2;
 var score = 0;
 var dealerScore = 0;
-const containerElement = document.querySelector(".player-card-group");
-const winningText = `<h1 class="game-result">YOU WIN</h1>`;
-const losingText = `<h1 class="game-result">BUST</h1>`;
 var details = {
     dealer: { idTracker: 1, userType: "dealer", cardGroup: "", deck: [], score: 0 },
     player: { idTracker: 2, userType: "player", cardGroup: "", deck: [], score: 0 }
 };
-var playerCardOne = randomCard(details.player);
-var playerCardTwo = randomCard(details.player);
+// var playerCardOne = randomCard(details.player);
+// var playerCardTwo = randomCard(details.player);
 var dealerCardOne = randomCard(details.dealer);
 var newCard = ``;
-var dealerObj = {};
-var playerObj = {};
 var userType;
+const gameResID = document.getElementById("game-result");
+// const gameResQuery = document.querySelector(".game-result");
 
 // Initialize score
 writeHTML("player-score", 0);
@@ -79,17 +76,23 @@ function checkAces(user) {
 // If score is still greater than 21 (after initial check) then player loses
 function checkScore() {
     if (details.player.score <= 21 && details.dealer.score == details.player.score) {
-        containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">Push</h1>`);
+        gameResID.classList.remove("inactive");
+        writeHTML("game-result", "PUSH");
     } else if (details.player.score == 21) {
-        containerElement.insertAdjacentHTML('beforeend', winningText);
+        gameResID.classList.remove("inactive");
+        writeHTML("game-result", "YOU WIN");
     } else if (details.player.score > 21) {
-        containerElement.insertAdjacentHTML('beforeend', losingText);
+        gameResID.classList.remove("inactive");
+        writeHTML("game-result", "BUST");
     } else if (details.dealer.score > details.player.score && details.dealer.score <= 21) {
-        containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">You lose</h1>`);
+        gameResID.classList.remove("inactive");
+        writeHTML("game-result", "YOU LOSE");
     } else if (details.player.score > details.dealer.score && details.player.score <= 21) {
-        containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">You win</h1>`);
+        gameResID.classList.remove("inactive");
+        writeHTML("game-result", "YOU WIN");
     } else if (details.dealer.score > 21) {
-        containerElement.insertAdjacentHTML('beforeend', `<h1 class="game-result">You win</h1>`);
+        gameResID.classList.remove("inactive");
+        writeHTML("game-result", "YOU WIN");
     } else {
         console.log("Missing case");
     }
@@ -101,7 +104,8 @@ function updateTotal(user) {
     filterDeck(user);
     checkAces(user);
     if (details.player.score > 21) {
-        containerElement.insertAdjacentHTML('beforeend', losingText);
+        gameResID.classList.remove("inactive");
+        writeHTML("game-result", "YOU LOSE");
     }
     if (user == details.player) {
         writeHTML(`${user.userType}-score`, details.player.score);
@@ -115,12 +119,19 @@ function writeHTML(elementID, inputResult) {
 
 // Initialize the card table
 function startGame() {
-    writeHTML("player-1", playerCardOne);
-    writeHTML("player-2", playerCardTwo);
-    details.player.deck = [playerCardOne, playerCardTwo];
+    gameResID.classList.add("inactive");
+    console.log("before");
+    console.log(details.player.deck);
+    hit(details.player);
+    console.log("after");
+    console.log(details.player.deck);
+    // writeHTML("player-1", playerCardOne);
+    // writeHTML("player-2", playerCardTwo);
+    // details.player.deck = [playerCardOne, playerCardTwo];
+    document.getElementById("initial-dealer-card").classList.remove("inactive");
     writeHTML("dealer-1", dealerCardOne);
     details.dealer.deck = [dealerCardOne];
-    updateTotal(details.player);
+    // updateTotal(details.player);
 }
 
 // Returns random card from deck, adds it to playerDeck
@@ -158,5 +169,8 @@ function changeBG() {
     }
     hexColorArr.unshift("#");
     var hexColor = hexColorArr.join('');
-    containerElement.style.backgroundColor = hexColor;
+    document.body.style.backgroundColor = hexColor;
 }
+
+console.log("end");
+console.log(details.player.deck);

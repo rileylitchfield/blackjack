@@ -91,4 +91,10 @@ body {
     color: red;
     z-index: 999;
     background: rgba(255,255,255,0.8);
+    font-weight: bold;
+    font-family: poppins, Courier;
+}
+
+.inactive {
+    display: none;
 }
