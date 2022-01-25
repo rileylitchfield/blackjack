@@ -2,14 +2,10 @@
 const deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 var randomVal = deck[Math.floor(Math.random() * deck.length)];
 var randomValInt = 0;
-var idTracker = 2;
-var score = 0;
-var dealerScore = 0;
 var details = {
     dealer: { idTracker: 1, userType: "dealer", cardGroup: "", deck: [], score: 0 },
     player: { idTracker: 2, userType: "player", cardGroup: "", deck: [], score: 0 }
 };
-var dealerCardOne = randomCard(details.dealer);
 var newCard = ``;
 var userType;
 const gameResID = document.getElementById("game-result");
@@ -17,10 +13,14 @@ var startTracker = 0;
 
 // Initialize score
 writeHTML("player-score", 0);
+writeHTML("dealer-score", 0);
 
 // Dealer's turn, recursive function
 function stand(user) {
     hit(user);
+    if (user.score > 21) {
+        document.getElementById("dealer-score").style.color = 'red';
+    }
     setTimeout(function () {
         if (user.score < 17) {
             stand(user);
@@ -100,10 +100,13 @@ function updateTotal(user) {
     filterDeck(user);
     checkAces(user);
     if (details.player.score > 21) {
+        document.getElementById("player-score").style.color = 'red';
         gameResID.classList.remove("inactive");
         writeHTML("game-result", "YOU LOSE");
     }
     if (user == details.player) {
+        writeHTML(`${user.userType}-score`, user.score);
+    } else if (user == details.dealer) {
         writeHTML(`${user.userType}-score`, user.score);
     }
 }
@@ -134,7 +137,7 @@ function startGame() {
         details.dealer.deck = [];
         details.player.score = 0;
         details.dealer.score = 0;
-        dealerCardOne = randomCard(details.dealer);
+        // dealerCardOne = randomCard(details.dealer);
 
         deal();
     }
@@ -142,12 +145,15 @@ function startGame() {
 }
 
 function deal() {
+    document.getElementById("dealer-score").style.color = 'white';
+    document.getElementById("player-score").style.color = 'white';
     gameResID.classList.add("inactive");
     hit(details.player);
     hit(details.player);
-    document.getElementById("initial-dealer-card").classList.remove("inactive");
-    writeHTML("dealer-1", dealerCardOne);
-    details.dealer.deck = [dealerCardOne];
+    hit(details.dealer);
+    // document.getElementById("initial-dealer-card").classList.remove("inactive");
+    // writeHTML("dealer-1", dealerCardOne);
+    // details.dealer.deck = [dealerCardOne];
 }
 
 // Returns random card from deck, adds it to playerDeck
