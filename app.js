@@ -1,7 +1,5 @@
 // Initialize variables
 const deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-var playerDeck = [];
-var dealerDeck = [];
 var randomVal = deck[Math.floor(Math.random() * deck.length)];
 var randomValInt = 0;
 var idTracker = 2;
@@ -11,13 +9,11 @@ var details = {
     dealer: { idTracker: 1, userType: "dealer", cardGroup: "", deck: [], score: 0 },
     player: { idTracker: 2, userType: "player", cardGroup: "", deck: [], score: 0 }
 };
-// var playerCardOne = randomCard(details.player);
-// var playerCardTwo = randomCard(details.player);
 var dealerCardOne = randomCard(details.dealer);
 var newCard = ``;
 var userType;
 const gameResID = document.getElementById("game-result");
-// const gameResQuery = document.querySelector(".game-result");
+var startTracker = 0;
 
 // Initialize score
 writeHTML("player-score", 0);
@@ -108,7 +104,7 @@ function updateTotal(user) {
         writeHTML("game-result", "YOU LOSE");
     }
     if (user == details.player) {
-        writeHTML(`${user.userType}-score`, details.player.score);
+        writeHTML(`${user.userType}-score`, user.score);
     }
 }
 
@@ -119,19 +115,39 @@ function writeHTML(elementID, inputResult) {
 
 // Initialize the card table
 function startGame() {
+    if (startTracker == 0) {
+        startTracker += 1;
+        deal();
+    } else {
+        // remove cards from table (in the DOM)
+        for (var key in details) {
+            for (let i = 0; i <= details[key].idTracker; i++) {
+                if (document.getElementById(`${details[key].userType}-card-${i}`)) {
+                    document.getElementById(`${details[key].userType}-card-${i}`).remove();
+                }
+            }
+
+        }
+
+        // reset stats
+        details.player.deck = [];
+        details.dealer.deck = [];
+        details.player.score = 0;
+        details.dealer.score = 0;
+        dealerCardOne = randomCard(details.dealer);
+
+        deal();
+    }
+
+}
+
+function deal() {
     gameResID.classList.add("inactive");
-    console.log("before");
-    console.log(details.player.deck);
     hit(details.player);
-    console.log("after");
-    console.log(details.player.deck);
-    // writeHTML("player-1", playerCardOne);
-    // writeHTML("player-2", playerCardTwo);
-    // details.player.deck = [playerCardOne, playerCardTwo];
+    hit(details.player);
     document.getElementById("initial-dealer-card").classList.remove("inactive");
     writeHTML("dealer-1", dealerCardOne);
     details.dealer.deck = [dealerCardOne];
-    // updateTotal(details.player);
 }
 
 // Returns random card from deck, adds it to playerDeck
@@ -146,7 +162,7 @@ function randomCard(user) {
 // i.e. user = details.player.variable
 function hit(user) {
     user.idTracker += 1;
-    newCard = `<div class="card">
+    newCard = `<div class="card" id="${user.userType}-card-${user.idTracker}">
                 <div class="${user.userType}-card-number-area number-area">
                     <div class="${user.userType}-card-number number" id="${user.userType}-${user.idTracker}"></div>
                 </div>
@@ -171,6 +187,3 @@ function changeBG() {
     var hexColor = hexColorArr.join('');
     document.body.style.backgroundColor = hexColor;
 }
-
-console.log("end");
-console.log(details.player.deck);
