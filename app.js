@@ -6,17 +6,12 @@ var details = {
     dealer: { idTracker: 1, userType: "dealer", cardGroup: "", deck: [], score: 0 },
     player: { idTracker: 2, userType: "player", cardGroup: "", deck: [], score: 0, betMoney: 100 }
 };
-
-console.log(details.player.betMoney);
 var newCard = ``;
 var userType;
 const gameResID = document.getElementById("game-result");
 var startTracker = 0;
 var playerBet = 20;
 var playerBank = 80;
-// var gameStatus = "";
-
-// 
 
 // Initialize variables in the DOM
 writeHTML("player-score", 0);
@@ -178,7 +173,6 @@ function startGame() {
         details.dealer.deck = [];
         details.player.score = 0;
         details.dealer.score = 0;
-        // dealerCardOne = randomCard(details.dealer);
 
         deal();
     }
@@ -192,9 +186,6 @@ function deal() {
     hit(details.player);
     hit(details.player);
     hit(details.dealer);
-    // document.getElementById("initial-dealer-card").classList.remove("inactive");
-    // writeHTML("dealer-1", dealerCardOne);
-    // details.dealer.deck = [dealerCardOne];
 }
 
 // Returns random card from deck, adds it to playerDeck
