@@ -13,12 +13,13 @@
 </head>
 
 <body>
-    <div class="controls-group-top">
-        <div class="score">
-            <h1 id="dealer-score"></h1>
-        </div>
-    </div>
     <div class="container">
+        <div class="controls-group-top">
+            <div class="score">
+                <h1>Score: <span id="dealer-score"></span></h1>
+            </div>
+        </div>
+
         <div class="card-group dealer-card-group">
             <div class="card inactive" id="initial-dealer-card">
                 <div class="dealer-card-number-area number-area">
@@ -29,15 +30,31 @@
         <div id="player-card-group" class="card-group player-card-group">
             <h1 id="game-result" class="game-result"></h1>
         </div>
-    </div>
-    <div class="controls-group-bottom">
-        <div class="buttons">
-            <button type="button" class="btn" onclick="startGame()">Deal</button>
-            <button type="button" class="btn" onclick="stand(details.dealer)">Stand</button>
-            <button type="button" class="btn" onclick="hit(details.player)">Hit</button>
-        </div>
-        <div class="score">
-            <h1 id="player-score"></h1>
+        <div class="controls-group-bottom">
+            <div class="money-group">
+                <div class="bet">
+                    <h1>Bank: <span id="player-bank"></span></h1>
+                </div>
+                <div class="bet">
+                    <h1>Bet: <span id="player-bet"></span></h1>
+                </div>
+            </div>
+            <div class="buttons">
+                <button type="button" class="btn-round" style="background: blue;" onclick="increaseBet(20)">20</button>
+                <button type="button" class="btn-round" style="background: purple;"
+                    onclick="increaseBet(100)">100</button>
+                <button type="button" class="btn-round" style="background: green;"
+                    onclick="increaseBet(500)">500</button>
+                <button type="button" class="btn-round" style="background: red;" onclick="increaseBet(1000)">1K</button>
+            </div>
+            <div class="buttons">
+                <button type="button" class="btn" onclick="startGame()">Deal</button>
+                <button type="button" class="btn" onclick="stand(details.dealer)">Stand</button>
+                <button type="button" class="btn" onclick="hit(details.player)">Hit</button>
+            </div>
+            <div class="score">
+                <h1>Score: <span id="player-score"></span></h1>
+            </div>
         </div>
     </div>
 

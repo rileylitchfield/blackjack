@@ -4,16 +4,25 @@ var randomVal = deck[Math.floor(Math.random() * deck.length)];
 var randomValInt = 0;
 var details = {
     dealer: { idTracker: 1, userType: "dealer", cardGroup: "", deck: [], score: 0 },
-    player: { idTracker: 2, userType: "player", cardGroup: "", deck: [], score: 0 }
+    player: { idTracker: 2, userType: "player", cardGroup: "", deck: [], score: 0, betMoney: 100 }
 };
+
+console.log(details.player.betMoney);
 var newCard = ``;
 var userType;
 const gameResID = document.getElementById("game-result");
 var startTracker = 0;
+var playerBet = 20;
+var playerBank = 80;
+// var gameStatus = "";
 
-// Initialize score
+// 
+
+// Initialize variables in the DOM
 writeHTML("player-score", 0);
 writeHTML("dealer-score", 0);
+writeHTML("player-bet", playerBet);
+writeHTML("player-bank", playerBank);
 
 // Dealer's turn, recursive function
 function stand(user) {
@@ -68,6 +77,32 @@ function checkAces(user) {
     }
 }
 
+// Increase bet
+function increaseBet(bet) {
+    if (playerBank > 0 && bet <= playerBank) {
+        playerBank -= bet;
+        playerBet += bet;
+        writeHTML("player-bank", `${playerBank}`);
+        writeHTML("player-bet", `${playerBet}`);
+    } else {
+        alert("ERROR");
+    }
+
+}
+
+// Update Bank and reset Bet
+function updateBank(gameStatus) {
+    if (gameStatus == "WIN") {
+        playerBank += playerBet;
+        playerBet = 20;
+        writeHTML("player-bank", `${playerBank}`);
+    } else if (gameStatus == "LOSE") {
+        playerBank -= playerBet;
+        playerBet = 20;
+        writeHTML("player-bank", `${playerBank}`);
+    }
+}
+
 // If score = 21, player wins
 // If score is still greater than 21 (after initial check) then player loses
 function checkScore() {
@@ -77,18 +112,23 @@ function checkScore() {
     } else if (details.player.score == 21) {
         gameResID.classList.remove("inactive");
         writeHTML("game-result", "YOU WIN");
+        updateBank("WIN");
     } else if (details.player.score > 21) {
         gameResID.classList.remove("inactive");
         writeHTML("game-result", "BUST");
+        updateBank("LOSE");
     } else if (details.dealer.score > details.player.score && details.dealer.score <= 21) {
         gameResID.classList.remove("inactive");
         writeHTML("game-result", "YOU LOSE");
+        updateBank("LOSE");
     } else if (details.player.score > details.dealer.score && details.player.score <= 21) {
         gameResID.classList.remove("inactive");
         writeHTML("game-result", "YOU WIN");
+        updateBank("WIN");
     } else if (details.dealer.score > 21) {
         gameResID.classList.remove("inactive");
         writeHTML("game-result", "YOU WIN");
+        updateBank("WIN");
     } else {
         console.log("Missing case");
     }
@@ -103,6 +143,7 @@ function updateTotal(user) {
         document.getElementById("player-score").style.color = 'red';
         gameResID.classList.remove("inactive");
         writeHTML("game-result", "YOU LOSE");
+        updateBank("LOSE");
     }
     if (user == details.player) {
         writeHTML(`${user.userType}-score`, user.score);
