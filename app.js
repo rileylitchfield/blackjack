@@ -12,6 +12,7 @@ const gameResID = document.getElementById("game-result");
 var startTracker = 0;
 var playerBet = 20;
 var playerBank = 80;
+var inGame = 0;
 
 // Initialize variables in the DOM
 writeHTML("player-score", 0);
@@ -21,18 +22,19 @@ writeHTML("player-bank", playerBank);
 
 // Dealer's turn, recursive function
 function stand(user) {
-    hit(user);
-    if (user.score > 21) {
-        document.getElementById("dealer-score").style.color = 'red';
-    }
-    setTimeout(function () {
-        if (user.score < 17) {
-            stand(user);
-        } else {
-            checkScore();
+    if (inGame == 1) {
+        hit(user);
+        if (user.score > 21) {
+            document.getElementById("dealer-score").style.color = 'red';
         }
-    }, 1000);
-
+        setTimeout(function () {
+            if (user.score < 17) {
+                stand(user);
+            } else {
+                checkScore();
+            }
+        }, 1000);
+    }
 }
 
 // Search for face cards and return their value
@@ -79,10 +81,7 @@ function increaseBet(bet) {
         playerBet += bet;
         writeHTML("player-bank", `${playerBank}`);
         writeHTML("player-bet", `${playerBet}`);
-    } else {
-        alert("ERROR");
     }
-
 }
 
 // Update Bank and reset Bet
@@ -93,8 +92,12 @@ function updateBank(gameStatus) {
         writeHTML("player-bank", `${playerBank}`);
     } else if (gameStatus == "LOSE") {
         playerBank -= playerBet;
-        playerBet = 20;
-        writeHTML("player-bank", `${playerBank}`);
+        if (playerBank > 0) {
+            playerBet = 20;
+            writeHTML("player-bank", `${playerBank}`);
+        } else {
+            document.getElementById("overlay").classList.remove("inactive");
+        }
     }
 }
 
@@ -104,26 +107,32 @@ function checkScore() {
     if (details.player.score <= 21 && details.dealer.score == details.player.score) {
         gameResID.classList.remove("inactive");
         writeHTML("game-result", "PUSH");
+        inGame = 0;
     } else if (details.player.score == 21) {
         gameResID.classList.remove("inactive");
         writeHTML("game-result", "YOU WIN");
         updateBank("WIN");
+        inGame = 0;
     } else if (details.player.score > 21) {
         gameResID.classList.remove("inactive");
         writeHTML("game-result", "BUST");
         updateBank("LOSE");
+        inGame = 0;
     } else if (details.dealer.score > details.player.score && details.dealer.score <= 21) {
         gameResID.classList.remove("inactive");
         writeHTML("game-result", "YOU LOSE");
         updateBank("LOSE");
+        inGame = 0;
     } else if (details.player.score > details.dealer.score && details.player.score <= 21) {
         gameResID.classList.remove("inactive");
         writeHTML("game-result", "YOU WIN");
         updateBank("WIN");
+        inGame = 0;
     } else if (details.dealer.score > 21) {
         gameResID.classList.remove("inactive");
         writeHTML("game-result", "YOU WIN");
         updateBank("WIN");
+        inGame = 0;
     } else {
         console.log("Missing case");
     }
@@ -139,6 +148,7 @@ function updateTotal(user) {
         gameResID.classList.remove("inactive");
         writeHTML("game-result", "YOU LOSE");
         updateBank("LOSE");
+        inGame = 0;
     }
     if (user == details.player) {
         writeHTML(`${user.userType}-score`, user.score);
@@ -156,29 +166,33 @@ function writeHTML(elementID, inputResult) {
 function startGame() {
     if (startTracker == 0) {
         startTracker += 1;
+        inGame = 1;
         deal();
     } else {
         // remove cards from table (in the DOM)
-        for (var key in details) {
-            for (let i = 0; i <= details[key].idTracker; i++) {
-                if (document.getElementById(`${details[key].userType}-card-${i}`)) {
-                    document.getElementById(`${details[key].userType}-card-${i}`).remove();
+        if (inGame == 0) {
+            inGame = 1;
+
+            for (var key in details) {
+                for (let i = 0; i <= details[key].idTracker; i++) {
+                    if (document.getElementById(`${details[key].userType}-card-${i}`)) {
+                        document.getElementById(`${details[key].userType}-card-${i}`).remove();
+                    }
                 }
             }
 
+            // reset stats
+            details.player.deck = [];
+            details.dealer.deck = [];
+            details.player.score = 0;
+            details.dealer.score = 0;
+
+            deal();
         }
-
-        // reset stats
-        details.player.deck = [];
-        details.dealer.deck = [];
-        details.player.score = 0;
-        details.dealer.score = 0;
-
-        deal();
     }
-
 }
 
+// Deal cards
 function deal() {
     document.getElementById("dealer-score").style.color = 'white';
     document.getElementById("player-score").style.color = 'white';
@@ -199,29 +213,30 @@ function randomCard(user) {
 
 // i.e. user = details.player.variable
 function hit(user) {
-    user.idTracker += 1;
-    newCard = `<div class="card" id="${user.userType}-card-${user.idTracker}">
+    if (inGame == 1) {
+        user.idTracker += 1;
+        newCard = `<div class="card" id="${user.userType}-card-${user.idTracker}">
                 <div class="${user.userType}-card-number-area number-area">
                     <div class="${user.userType}-card-number number" id="${user.userType}-${user.idTracker}"></div>
                 </div>
             </div>`;
-    document.querySelector(`.${user.userType}-card-group`).insertAdjacentHTML('beforeend', newCard);
-    writeHTML(`${user.userType}-${user.idTracker}`, randomCard(user));
-    updateTotal(user);
+        document.querySelector(`.${user.userType}-card-group`).insertAdjacentHTML('beforeend', newCard);
+        writeHTML(`${user.userType}-${user.idTracker}`, randomCard(user));
+        updateTotal(user);
+    }
 }
 
-// Change card table background color
-function changeBG() {
-    var hexColorArr = [];
-    for (let i = 0; i < 3; i++) {
-        newNum = Math.round(Math.random() * 10);
-        if (newNum < 10) {
-            hexColorArr.push(newNum);
-        } else {
-            i--;
-        }
-    }
-    hexColorArr.unshift("#");
-    var hexColor = hexColorArr.join('');
-    document.body.style.backgroundColor = hexColor;
+// Restart game when player runs out of money
+function restart() {
+    var details = {
+        dealer: { idTracker: 1, userType: "dealer", cardGroup: "", deck: [], score: 0 },
+        player: { idTracker: 2, userType: "player", cardGroup: "", deck: [], score: 0, betMoney: 100 }
+    };
+    var newCard = ``;
+    var startTracker = 0;
+    var playerBet = 20;
+    var playerBank = 80;
+    writeHTML("player-bank", `${playerBank}`);
+    startGame();
+    document.getElementById("overlay").classList.add("inactive");
 }
