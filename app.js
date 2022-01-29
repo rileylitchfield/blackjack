@@ -3,8 +3,8 @@ const deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 var randomVal = deck[Math.floor(Math.random() * deck.length)];
 var randomValInt = 0;
 var details = {
-    dealer: { idTracker: 1, userType: "dealer", cardGroup: "", deck: [], score: 0 },
-    player: { idTracker: 2, userType: "player", cardGroup: "", deck: [], score: 0, betMoney: 100 }
+    dealer: { idTracker: 0, userType: "dealer", cardGroup: "", deck: [], score: 0 },
+    player: { idTracker: 0, userType: "player", cardGroup: "", deck: [], score: 0, betMoney: 100 }
 };
 var newCard = ``;
 var userType;
@@ -19,6 +19,7 @@ writeHTML("player-score", 0);
 writeHTML("dealer-score", 0);
 writeHTML("player-bet", playerBet);
 writeHTML("player-bank", playerBank);
+
 
 // Dealer's turn, recursive function
 function stand(user) {
@@ -76,11 +77,13 @@ function checkAces(user) {
 
 // Increase bet
 function increaseBet(bet) {
-    if (playerBank > 0 && bet <= playerBank) {
-        playerBank -= bet;
-        playerBet += bet;
-        writeHTML("player-bank", `${playerBank}`);
-        writeHTML("player-bet", `${playerBet}`);
+    if (inGame == 0) {
+        if (playerBank > 0 && bet <= playerBank) {
+            playerBank -= bet;
+            playerBet += bet;
+            writeHTML("player-bank", `${playerBank}`);
+            writeHTML("player-bet", `${playerBet}`);
+        }
     }
 }
 
@@ -169,19 +172,12 @@ function startGame() {
         inGame = 1;
         deal();
     } else {
-        // remove cards from table (in the DOM)
+        // Remove cards and reset stats
         if (inGame == 0) {
             inGame = 1;
 
-            for (var key in details) {
-                for (let i = 0; i <= details[key].idTracker; i++) {
-                    if (document.getElementById(`${details[key].userType}-card-${i}`)) {
-                        document.getElementById(`${details[key].userType}-card-${i}`).remove();
-                    }
-                }
-            }
+            clearTable();
 
-            // reset stats
             details.player.deck = [];
             details.dealer.deck = [];
             details.player.score = 0;
@@ -192,11 +188,23 @@ function startGame() {
     }
 }
 
+// remove cards from table (in the DOM)
+function clearTable() {
+    for (var key in details) {
+        for (let i = 1; i <= details[key].idTracker; i++) {
+            if (document.getElementById(`${details[key].userType}-card-${i}`)) {
+                document.getElementById(`${details[key].userType}-card-${i}`).remove();
+            }
+        }
+    }
+}
+
 // Deal cards
 function deal() {
     document.getElementById("dealer-score").style.color = 'white';
     document.getElementById("player-score").style.color = 'white';
     gameResID.classList.add("inactive");
+
     hit(details.player);
     hit(details.player);
     hit(details.dealer);
@@ -228,15 +236,5 @@ function hit(user) {
 
 // Restart game when player runs out of money
 function restart() {
-    var details = {
-        dealer: { idTracker: 1, userType: "dealer", cardGroup: "", deck: [], score: 0 },
-        player: { idTracker: 2, userType: "player", cardGroup: "", deck: [], score: 0, betMoney: 100 }
-    };
-    var newCard = ``;
-    var startTracker = 0;
-    var playerBet = 20;
-    var playerBank = 80;
-    writeHTML("player-bank", `${playerBank}`);
-    startGame();
-    document.getElementById("overlay").classList.add("inactive");
+    window.location.reload(true);
 }
