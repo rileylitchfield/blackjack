@@ -9,7 +9,7 @@ var details = {
 var newCard = ``;
 var userType;
 const gameResID = document.getElementById("game-result");
-var startTracker = 0;
+var initStart = 0;
 var playerBet = 20;
 var playerBank = 80;
 var inGame = 0;
@@ -90,14 +90,17 @@ function increaseBet(bet) {
 // Update Bank and reset Bet
 function updateBank(gameStatus) {
     if (gameStatus == "WIN") {
-        playerBank += playerBet;
+        playerBank += ((2 * playerBet) - 20);
         playerBet = 20;
         writeHTML("player-bank", `${playerBank}`);
+        writeHTML("player-bet", `${playerBet}`);
     } else if (gameStatus == "LOSE") {
-        playerBank -= playerBet;
-        if (playerBank > 0) {
+        playerBet = 20;
+        playerBank -= 20;
+        if (playerBank >= 0) {
             playerBet = 20;
             writeHTML("player-bank", `${playerBank}`);
+            writeHTML("player-bet", `${playerBet}`);
         } else {
             document.getElementById("overlay").classList.remove("inactive");
         }
@@ -107,35 +110,25 @@ function updateBank(gameStatus) {
 // If score = 21, player wins
 // If score is still greater than 21 (after initial check) then player loses
 function checkScore() {
+    gameResID.classList.remove("inactive");
+    inGame = 0;
     if (details.player.score <= 21 && details.dealer.score == details.player.score) {
-        gameResID.classList.remove("inactive");
         writeHTML("game-result", "PUSH");
-        inGame = 0;
-    } else if (details.player.score == 21) {
-        gameResID.classList.remove("inactive");
+    } else if (details.player.score == 21 && details.dealer.score != 21) {
         writeHTML("game-result", "YOU WIN");
         updateBank("WIN");
-        inGame = 0;
     } else if (details.player.score > 21) {
-        gameResID.classList.remove("inactive");
         writeHTML("game-result", "BUST");
         updateBank("LOSE");
-        inGame = 0;
     } else if (details.dealer.score > details.player.score && details.dealer.score <= 21) {
-        gameResID.classList.remove("inactive");
         writeHTML("game-result", "YOU LOSE");
         updateBank("LOSE");
-        inGame = 0;
     } else if (details.player.score > details.dealer.score && details.player.score <= 21) {
-        gameResID.classList.remove("inactive");
         writeHTML("game-result", "YOU WIN");
         updateBank("WIN");
-        inGame = 0;
     } else if (details.dealer.score > 21) {
-        gameResID.classList.remove("inactive");
         writeHTML("game-result", "YOU WIN");
         updateBank("WIN");
-        inGame = 0;
     } else {
         console.log("Missing case");
     }
@@ -167,8 +160,8 @@ function writeHTML(elementID, inputResult) {
 
 // Initialize the card table
 function startGame() {
-    if (startTracker == 0) {
-        startTracker += 1;
+    if (initStart == 0) {
+        initStart += 1;
         inGame = 1;
         deal();
     } else {
