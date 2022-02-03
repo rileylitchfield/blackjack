@@ -1,12 +1,12 @@
 // Initialize variables
-const deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-var randomVal = deck[Math.floor(Math.random() * deck.length)];
-var randomValInt = 0;
+var suits = ["spades", "diamonds", "clubs", "hearts"];
+var values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+let deck = [];
 var details = {
     dealer: { idTracker: 0, userType: "dealer", cardGroup: "", deck: [], score: 0 },
     player: { idTracker: 0, userType: "player", cardGroup: "", deck: [], score: 0, betMoney: 100 }
 };
-var newCard = ``;
+var cardElement = ``;
 var userType;
 const gameResID = document.getElementById("game-result");
 var initStart = 0;
@@ -20,6 +20,35 @@ writeHTML("dealer-score", 0);
 writeHTML("player-bet", playerBet);
 writeHTML("player-bank", playerBank);
 
+function createDeck() {
+    let newDeck = [];
+    for (let i = 0; i < suits.length; i++) {
+        for (let x = 0; x < values.length; x++) {
+            let card = { value: values[x], suit: suits[i], int: null };
+            if (values[x] === "J" || values[x] === "Q" || values[x] === "K") {
+                card = { value: values[x], suit: suits[i], int: 10 };
+            } else if (values[x] === "A") {
+                card = { value: values[x], suit: suits[i], int: 11 };
+            } else {
+                card = { value: values[x], suit: suits[i], int: parseInt(values[x]) };
+            }
+            newDeck.push(card);
+        }
+    }
+    return newDeck;
+}
+
+// switch the values of two random cards 52 times
+function shuffle(deck) {
+    for (let i = 0; i < deck.length; i++) {
+        let index1 = Math.floor((Math.random() * deck.length));
+        let index2 = Math.floor((Math.random() * deck.length));
+        let tmp = deck[index1];
+
+        deck[index1] = deck[index2];
+        deck[index2] = tmp;
+    }
+}
 
 // Dealer's turn, recursive function
 function stand(user) {
@@ -38,37 +67,13 @@ function stand(user) {
     }
 }
 
-// Search for face cards and return their value
-function filterDeck(user) {
-    for (let i = 0; i < user.deck.length; i++) {
-        switch (user.deck[i]) {
-            case "J":
-                randomValInt = 10;
-                break;
-            case "Q":
-                randomValInt = 10;
-                break;
-            case "K":
-                randomValInt = 10;
-                break;
-            case "A":
-                randomValInt = 11;
-                break;
-            default:
-                randomValInt = user.deck[i];
-                break;
-        }
-        user.score += parseInt(randomValInt);
-    }
-}
-
 // If players busts, check for aces to reduce the value from 11 to 1
 // If there is more than one ace, it prioritizes 11 over 1 unless it is a bust
 function checkAces(user) {
     if (user.score > 21) {
         for (let i = 0; i < user.deck.length; i++) {
-            if (user.deck[i] == "A" && user.score > 21) {
-                user.deck[i] = "1";
+            if (user.deck[i].value == "A" && user.score > 21 && user.deck[i].int === 11) {
+                user.deck[i].int = 1;
                 updateTotal(user);
             }
         }
@@ -137,7 +142,9 @@ function checkScore() {
 // Reset and re-add score from playerDeck, check for face cards, check for 21 or bust
 function updateTotal(user) {
     user.score = 0;
-    filterDeck(user);
+    for (let i = 0; i < user.deck.length; i++) {
+        user.score += user.deck[i].int;
+    }
     checkAces(user);
     if (details.player.score > 21) {
         document.getElementById("player-score").style.color = 'red';
@@ -163,6 +170,8 @@ function startGame() {
     if (initStart == 0) {
         initStart += 1;
         inGame = 1;
+        deck = createDeck();
+        shuffle(deck);
         deal();
     } else {
         // Remove cards and reset stats
@@ -203,26 +212,26 @@ function deal() {
     hit(details.dealer);
 }
 
-// Returns random card from deck, adds it to playerDeck
-function randomCard(user) {
-    randomVal = deck[Math.floor(Math.random() * deck.length)];
-    user.deck.push(randomVal);
-    user.score = 0;
-    filterDeck(user);
-    return randomVal;
+// Take a card off the top of the deck 
+// and add it to the user's deck
+function dealCard(user) {
+    let cardDealt = deck.pop();
+    user.deck.push(cardDealt);
+    return cardDealt.value;
 }
 
 // i.e. user = details.player.variable
 function hit(user) {
+    let card = dealCard(user);
     if (inGame == 1) {
         user.idTracker += 1;
-        newCard = `<div class="card" id="${user.userType}-card-${user.idTracker}">
+        cardElement = `<div class="card" id="${user.userType}-card-${user.idTracker}">
                 <div class="${user.userType}-card-number-area number-area">
                     <div class="${user.userType}-card-number number" id="${user.userType}-${user.idTracker}"></div>
                 </div>
             </div>`;
-        document.querySelector(`.${user.userType}-card-group`).insertAdjacentHTML('beforeend', newCard);
-        writeHTML(`${user.userType}-${user.idTracker}`, randomCard(user));
+        document.querySelector(`.${user.userType}-card-group`).insertAdjacentHTML('beforeend', cardElement);
+        writeHTML(`${user.userType}-${user.idTracker}`, card);
         updateTotal(user);
     }
 }
